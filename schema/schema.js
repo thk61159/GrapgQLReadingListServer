@@ -4,8 +4,8 @@ const {
 	GraphQLObjectType,
 	GraphQLString,
 	GraphQLID,
-  GraphQLInt,
-  GraphQLList
+	GraphQLInt,
+	GraphQLList,
 } = require('graphql')
 // https://lodash.com
 const _ = require('lodash')
@@ -85,18 +85,22 @@ const Mutation = new GraphQLObjectType({
 				name: { type: GraphQLString },
 				age: { type: GraphQLInt },
 			},
-			resolve(parent, args) {
+			async resolve(parent, args) {
 				const newAuthor = new Author({
 					name: args.name,
 					age: args.age,
-        })
-        console.log(newAuthor)
-				newAuthor?.save()
+				})
+
+				try {
+					const savedAuthor = await newAuthor.save()
+				} catch (error) {
+					console.log('Error saving author:', error.message)
+				}
 			},
 		},
 	},
 })
 module.exports = new GraphQLSchema({
-  query: RootQuery,
-  mutation: Mutation
+	query: RootQuery,
+	mutation: Mutation,
 })
