@@ -2,7 +2,7 @@ const express = require('express')
 const { graphqlHTTP } = require('express-graphql')
 
 const schema = require('./schema/schema')
-
+const dbconnect = require('./config/mongoConnect')
 const app = express()
 
 app.get('/', (req, res) => {
