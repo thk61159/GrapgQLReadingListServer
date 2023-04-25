@@ -5,10 +5,12 @@ const {
 	GraphQLString,
 	GraphQLID,
 	GraphQLInt,
-	GraphQLList,
+  GraphQLList,
+  GraphQLNonNull
 } = require('graphql')
 // https://lodash.com
 const _ = require('lodash')
+// const mongoose = require('mongoose')
 
 const Book = require('../models/book')
 const Author = require('../models/author')
@@ -18,12 +20,13 @@ const BookType = new GraphQLObjectType({
 	fields: () => ({
 		id: { type: GraphQLID },
 		name: { type: GraphQLString },
-		genre: { type: GraphQLString },
+    genre: { type: GraphQLString },
+    // authorId:{ type: GraphQLID },
 		author: {
 			type: AuthorType,
 			resolve(parent, args) {
 				// console.log(parent)
-				return _.find(authors, { id: parent.authorId })
+				return Author.findById(parent.authorId)
 			},
 		},
 	}),
@@ -38,7 +41,7 @@ const AuthorType = new GraphQLObjectType({
 		books: {
 			type: new GraphQLList(BookType),
 			resolve(parent, args) {
-				return _.filter(books, { authorId: parent.id })
+				return Book.find({ authorId: parent.id})
 			},
 		},
 	}),
@@ -51,26 +54,26 @@ const RootQuery = new GraphQLObjectType({
 			args: { id: { type: GraphQLID } },
 			resolve(parent, args) {
 				//code to get data from db
-				return _.find(books, { id: args.id })
+				return Book.findById(args.id)
 			},
 		},
 		author: {
 			type: AuthorType,
 			args: { id: { type: GraphQLID } },
 			resolve(parent, args) {
-				return _.find(authors, { id: args.id })
+				return Author.findById(args.id)
 			},
 		},
 		books: {
 			type: new GraphQLList(BookType),
 			resolve(parent, args) {
-				return books
+				return Book.find()
 			},
 		},
 		authors: {
 			type: new GraphQLList(AuthorType),
 			resolve(parent, args) {
-				return authors
+				return Author.find()
 			},
 		},
 	}),
@@ -93,8 +96,31 @@ const Mutation = new GraphQLObjectType({
 
 				try {
 					const savedAuthor = await newAuthor.save()
+					return savedAuthor
 				} catch (error) {
 					console.log('Error saving author:', error.message)
+				}
+			},
+		},
+		addBook: {
+			type: BookType,
+			args: {
+				name: { type: GraphQLString },
+				genre: { type: GraphQLString },
+				authorId: { type: GraphQLID },
+			},
+      async resolve(parent, args) {
+				const newBook = new Book({
+					name: args.name,
+					genre: args.genre,
+					authorId: args.authorId,
+				})
+
+				try {
+					const savedBook = await newBook.save()
+					return savedBook
+				} catch (error) {
+					console.log('Error saving book:', error.message)
 				}
 			},
 		},

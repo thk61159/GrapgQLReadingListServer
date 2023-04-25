@@ -5,20 +5,27 @@ const Author = require('../author')
 
 // dummy data
 const books = [
-	{ name: 'Name of the Wind', genre: 'Fantasy', id: '1', authorId: '1' },
-	{ name: 'The Final Empire', genre: 'Fantasy', id: '2', authorId: '2' },
-	{ name: 'The Long Earth', genre: 'Sci-Fi', id: '3', authorId: '3' },
-	{ name: 'The Hero of Ages', genre: 'Fantasy', id: '4', authorId: '2' },
-	{ name: 'The Colour of Magic', genre: 'Fantasy', id: '5', authorId: '3' },
-	{ name: 'The Light Fantastic', genre: 'Fantasy', id: '6', authorId: '3' },
+	{ name: 'Name of the Wind', genre: 'Fantasy'},
+	{ name: 'The Final Empire', genre: 'Fantasy' },
+	{ name: 'The Long Earth', genre: 'Sci-Fi'},
+	{ name: 'The Hero of Ages', genre: 'Fantasy' },
+	{ name: 'The Colour of Magic', genre: 'Fantasy' },
+	{ name: 'The Light Fantastic', genre: 'Fantasy' },
 ]
 
 const authors = [
-	{ name: 'Patrick Rothfuss', age: 44, id: '1' },
-	{ name: 'Brandon Sanderson', age: 42, id: '2' },
-	{ name: 'Terry Pratchett', age: 66, id: '3' },
+	{ name: 'Patrick Rothfuss', age: 44, },
+	{ name: 'Brandon Sanderson', age: 42,},
+	{ name: 'Terry Pratchett', age: 66, },
 ]
-dbconnect.once('open', () => {
-  Book.insertMany(books)
-  Author.insertMany(authors)
+function RandomInt(rang) {
+  return Math.floor(Math.random() * rang)
+}
+
+dbconnect.once('open', async () => {
+  const Authors = await Author.insertMany(authors)
+  for (let e of books) { 
+    Book.create({ ...e, authorId:Authors[RandomInt(Authors.length)]._id })
+  }
+  
 })
