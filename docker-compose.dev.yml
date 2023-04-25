@@ -10,12 +10,12 @@ services:
       - dev-module:/app/node_modules
     environment:
       - NODE_ENV=development
-      # - MONGO_USER=root
-      # - MONGO_PASSWORD=password
+      - MONGO_USER=root
+      - MONGO_PASSWORD=password
       # - SESSION_SECRET=secret
     command: npm run dev
-  # mongo:
-  #   ports:
-  #     - "27017:27017"
+  mongo:
+    ports:
+      - "27017:27017"
 volumes:
   dev-module:
