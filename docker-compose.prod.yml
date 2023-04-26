@@ -4,16 +4,12 @@ services:
     build: 
       context: .
       args:
-        NODE_ENV: development
+        NODE_ENV: production
     volumes:
       - ./:/app:ro
       - /app/node_modules
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
       - MONGO_USER=root
       - MONGO_PASSWORD=password
-      # - SESSION_SECRET=secret
     command: bash -c "npm run seed && npm run dev"
-  mongo:
-    ports:
-      - "27017:27017"
