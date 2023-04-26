@@ -1,9 +1,11 @@
 const express = require('express')
 const { graphqlHTTP } = require('express-graphql')
+const cors = require('cors')
 
 const schema = require('./schema/schema')
 const dbconnect = require('./config/mongoConnect')
 const app = express()
+app.use(cors())
 
 app.get('/', (req, res) => {
 

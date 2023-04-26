@@ -10,7 +10,6 @@ const {
 } = require('graphql')
 // https://lodash.com
 const _ = require('lodash')
-// const mongoose = require('mongoose')
 
 const Book = require('../models/book')
 const Author = require('../models/author')
@@ -21,12 +20,14 @@ const BookType = new GraphQLObjectType({
 		id: { type: GraphQLID },
 		name: { type: GraphQLString },
     genre: { type: GraphQLString },
-    // authorId:{ type: GraphQLID },
 		author: {
 			type: AuthorType,
 			resolve(parent, args) {
 				// console.log(parent)
-				return Author.findById(parent.authorId)
+				return Author.findById(parent.authorId).catch(err => {
+					console.log(err)
+					return err
+				})
 			},
 		},
 	}),
@@ -41,7 +42,10 @@ const AuthorType = new GraphQLObjectType({
 		books: {
 			type: new GraphQLList(BookType),
 			resolve(parent, args) {
-				return Book.find({ authorId: parent.id})
+				return Book.find({ authorId: parent.id }).catch(err => {
+					console.log(err)
+					return err
+				})
 			},
 		},
 	}),
@@ -54,26 +58,38 @@ const RootQuery = new GraphQLObjectType({
 			args: { id: { type: GraphQLID } },
 			resolve(parent, args) {
 				//code to get data from db
-				return Book.findById(args.id)
+				return Book.findById(args.id).catch(err => {
+					console.log(err)
+					return err
+				})
 			},
 		},
 		author: {
 			type: AuthorType,
 			args: { id: { type: GraphQLID } },
 			resolve(parent, args) {
-				return Author.findById(args.id)
+				return Author.findById(args.id).catch(err => {
+					console.log(err)
+					return err
+				})
 			},
 		},
 		books: {
 			type: new GraphQLList(BookType),
 			resolve(parent, args) {
-				return Book.find()
+				return Book.find().catch(err => {
+					console.log(err)
+					return err
+				})
 			},
 		},
 		authors: {
 			type: new GraphQLList(AuthorType),
 			resolve(parent, args) {
-				return Author.find()
+				return Author.find().catch(err => {
+					console.log(err)
+					return err
+				})
 			},
 		},
 	}),
@@ -85,43 +101,41 @@ const Mutation = new GraphQLObjectType({
 		addAuthor: {
 			type: AuthorType,
 			args: {
-				name: { type: GraphQLString },
-				age: { type: GraphQLInt },
+				name: { type: new GraphQLNonNull(GraphQLString) },
+				age: { type: new GraphQLNonNull(GraphQLInt) },
 			},
-			async resolve(parent, args) {
+			resolve(parent, args) {
 				const newAuthor = new Author({
 					name: args.name,
 					age: args.age,
 				})
 
-				try {
-					const savedAuthor = await newAuthor.save()
-					return savedAuthor
-				} catch (error) {
-					console.log('Error saving author:', error.message)
-				}
+				const savedAuthor = newAuthor.save().catch(err => {
+					console.log(err)
+					return err
+				})
+				return savedAuthor
 			},
 		},
 		addBook: {
 			type: BookType,
 			args: {
-				name: { type: GraphQLString },
-				genre: { type: GraphQLString },
-				authorId: { type: GraphQLID },
+				name: { type: new GraphQLNonNull(GraphQLString) },
+				genre: { type: new GraphQLNonNull(GraphQLString) },
+				authorId: { type: new GraphQLNonNull(GraphQLID) },
 			},
-      async resolve(parent, args) {
+			resolve(parent, args) {
 				const newBook = new Book({
 					name: args.name,
 					genre: args.genre,
 					authorId: args.authorId,
 				})
 
-				try {
-					const savedBook = await newBook.save()
-					return savedBook
-				} catch (error) {
-					console.log('Error saving book:', error.message)
-				}
+				const savedBook = newBook.save().catch(err => {
+					console.log(err)
+					return err
+				})
+				return savedBook
 			},
 		},
 	},

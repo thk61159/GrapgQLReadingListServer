@@ -6,12 +6,14 @@
 	"scripts": {
 		"start": "node app.js",
 		"dev": "nodemon -L app.js",
+		"seed": "node models/seeds/seeder.js",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"cors": "^2.8.5",
 		"express": "^4.18.2",
 		"express-graphql": "^0.12.0",
 		"graphql": "^14.7.0",
