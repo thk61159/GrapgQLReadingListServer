@@ -27,5 +27,5 @@ dbconnect.once('open', async () => {
   for (let e of books) { 
     Book.create({ ...e, authorId:Authors[RandomInt(Authors.length)]._id })
   }
-  
+  console.log('add seeder')
 })
