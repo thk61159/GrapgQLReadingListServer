@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const { MONGO_URL } = require('./config.js')
 const connectWithRetry = () => {
 	mongoose
-		.connect(MONGO_URL)
+		.connect(MONGO_URL, { dbName: 'graphql' })
 		.then(() => console.log('connect to MongoDB successfully'))
 		.catch(e => {
 			console.log(e)
